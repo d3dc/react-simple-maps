@@ -1,7 +1,10 @@
 import React, { Component } from "react"
 import { geoLength } from "d3-geo"
 
+import { MapContext } from "./ComposableMap"
+
 class Line extends Component {
+  static contextType = MapContext
   constructor(props) {
     super(props)
 
@@ -107,16 +110,13 @@ class Line extends Component {
     )
   }
   render() {
+    const { projection, zoom, width, height } = this.context
     const {
       className,
-      projection,
       line,
       style,
       tabable,
-      zoom,
       preserveMarkerAspect,
-      width,
-      height,
       buildPath,
       strokeWidth
     } = this.props
@@ -135,9 +135,13 @@ class Line extends Component {
     const startLineString = buildLineString(line.coordinates.start)
     const endLineString = buildLineString(line.coordinates.end)
 
-    const radians = Math.PI/2, degrees = 90
+    const radians = Math.PI / 2,
+      degrees = 90
     const isGlobe = projection.clipAngle && projection.clipAngle() === degrees
-    const isHidden = isGlobe && (geoLength(startLineString) > radians || geoLength(endLineString) > radians)
+    const isHidden =
+      isGlobe &&
+      (geoLength(startLineString) > radians ||
+        geoLength(endLineString) > radians)
 
     const start = projection(line.coordinates.start)
     const end = projection(line.coordinates.end)
@@ -150,14 +154,18 @@ class Line extends Component {
       <path
         className={`rsm-line${pressed ? " rsm-line--pressed" : ""}${
           hover ? " rsm-line--hover" : ""
-          } ${className}`}
+        } ${className}`}
         transform={`${scale}`}
         style={
           style[
             isHidden
               ? "hidden"
-              : pressed || hover ? (pressed ? "pressed" : "hover") : "default"
-            ]
+              : pressed || hover
+              ? pressed
+                ? "pressed"
+                : "hover"
+              : "default"
+          ]
         }
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
@@ -190,7 +198,7 @@ Line.defaultProps = {
   tabable: true,
   preserveMarkerAspect: true,
   strokeWidth: 1,
-  className: "",
+  className: ""
 }
 
 export default Line

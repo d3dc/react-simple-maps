@@ -1,10 +1,10 @@
-
-import React, { Component } from "react"
+import React, { Component, createRef } from "react"
 import { geoPath } from "d3-geo"
 
-import { createNewChildren } from "./utils"
+import { MapContext } from "./utils"
 
 class ZoomableGlobe extends Component {
+  static contextType = MapContext
   constructor(props) {
     super(props)
 
@@ -19,9 +19,11 @@ class ZoomableGlobe extends Component {
       rotation: [
         initialRotation[0] - props.center[0],
         initialRotation[1] - props.center[1],
-        initialRotation[2],
-      ],
+        initialRotation[2]
+      ]
     }
+
+    this.zoomableGlobeNode = createRef()
 
     this.handleMouseMove = this.handleMouseMove.bind(this)
     this.handleMouseUp = this.handleMouseUp.bind(this)
@@ -42,10 +44,10 @@ class ZoomableGlobe extends Component {
       mouseXStart: clientX,
       mouseYStart: clientY,
       rotation: [
-        this.state.rotation[0] + (differenceX * this.props.sensitivity),
-        this.state.rotation[1] - (differenceY * this.props.sensitivity),
-        this.state.rotation[2],
-      ],
+        this.state.rotation[0] + differenceX * this.props.sensitivity,
+        this.state.rotation[1] - differenceY * this.props.sensitivity,
+        this.state.rotation[2]
+      ]
     })
   }
   handleTouchMove({ touches }) {
@@ -55,10 +57,13 @@ class ZoomableGlobe extends Component {
     if (this.props.disablePanning) return
     if (!this.state.isPressed) return
     this.setState({
-      isPressed: false,
+      isPressed: false
     })
     if (!this.props.onMoveEnd) return
-    const newCenter = this.props.projection.invert([this.props.width/2,this.props.height/2])
+    const newCenter = this.props.projection.invert([
+      this.props.width / 2,
+      this.props.height / 2
+    ])
     this.props.onMoveEnd(newCenter)
   }
   handleMouseDown({ pageX, pageY, clientX, clientY }) {
@@ -66,17 +71,19 @@ class ZoomableGlobe extends Component {
     this.setState({
       isPressed: true,
       mouseXStart: clientX,
-      mouseYStart: clientY,
+      mouseYStart: clientY
     })
     if (!this.props.onMoveStart) return
-    const currentCenter = this.props.projection.invert([this.props.width/2,this.props.height/2])
+    const currentCenter = this.props.projection.invert([
+      this.props.width / 2,
+      this.props.height / 2
+    ])
     this.props.onMoveStart(currentCenter)
   }
   handleTouchStart({ touches }) {
     if (touches.length > 1) {
       this.handleMouseDown(touches[0])
-    }
-    else {
+    } else {
       this.handleMouseUp()
     }
   }
@@ -85,16 +92,20 @@ class ZoomableGlobe extends Component {
       evt.preventDefault()
     }
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextContext) {
     const { mouseX, mouseY } = this.state
-    const { projection, center, zoom } = this.props
+    const { projection } = this.context
+    const { center, zoom } = this.props
 
     const zoomFactor = nextProps.zoom / zoom
-    const centerChanged = JSON.stringify(nextProps.center) !== JSON.stringify(center)
+    const centerChanged =
+      JSON.stringify(nextProps.center) !== JSON.stringify(center)
 
     this.setState({
       zoom: nextProps.zoom,
-      rotation: centerChanged ? [-nextProps.center[0], -nextProps.center[1], this.state.rotation[2]] : this.state.rotation,
+      rotation: centerChanged
+        ? [-nextProps.center[0], -nextProps.center[1], this.state.rotation[2]]
+        : this.state.rotation
     })
   }
   componentDidMount() {
@@ -102,64 +113,58 @@ class ZoomableGlobe extends Component {
 
     window.addEventListener("resize", this.handleResize)
     window.addEventListener("mouseup", this.handleMouseUp)
-    this.zoomableGlobeNode.addEventListener("touchmove", this.preventTouchScroll)
+    this.zoomableGlobeNode.current.addEventListener(
+      "touchmove",
+      this.preventTouchScroll
+    )
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.handleResize)
     window.removeEventListener("mouseup", this.handleMouseUp)
-    this.zoomableGlobeNode.removeEventListener("touchmove", this.preventTouchScroll)
+    this.zoomableGlobeNode.current.removeEventListener(
+      "touchmove",
+      this.preventTouchScroll
+    )
   }
   render() {
-    const {
-      width,
-      height,
-      zoom,
-      style,
-      projection,
-      children,
-    } = this.props
+    const { style, children } = this.props
+    const { projection, width, height, zoom } = this.context
 
-    const {
-      mouseX,
-      mouseY,
-    } = this.state
+    const { rotation, mouseX, mouseY } = this.state
 
     return (
-      <g className="rsm-zoomable-globe"
-         ref={ zoomableGlobeNode => this.zoomableGlobeNode = zoomableGlobeNode }
-         transform={`
-           translate(${ width / 2 } ${ height / 2 })
-           scale(${ zoom })
-           translate(${ -width / 2 } ${ -height / 2 })
-         `}
-         onMouseMove={ this.handleMouseMove }
-         onMouseUp={ this.handleMouseUp }
-         onMouseDown={ this.handleMouseDown }
-         onTouchStart={ this.handleTouchStart }
-         onTouchMove={ this.handleTouchMove }
-         onTouchEnd={ this.handleMouseUp }
-         style={ style }
+      <MapContext
+        value={{
+          ...this.context,
+          projection: projection.rotate(rotation)
+        }}
       >
-        { createNewChildren(children, {
-            width,
-            height,
-            center: this.center,
-            backdrop: this.backdrop,
-            zoom: this.props.zoom,
-            disablePanning: this.props.disablePanning,
-            children,
-            projection: projection.rotate(this.state.rotation),
-          }) }
-      </g>
+        <g
+          className="rsm-zoomable-globe"
+          ref={this.zoomableGlobeNode}
+          transform={`
+           translate(${width / 2} ${height / 2})
+           scale(${zoom})
+           translate(${-width / 2} ${-height / 2})
+         `}
+          onMouseMove={this.handleMouseMove}
+          onMouseUp={this.handleMouseUp}
+          onMouseDown={this.handleMouseDown}
+          onTouchStart={this.handleTouchStart}
+          onTouchMove={this.handleTouchMove}
+          onTouchEnd={this.handleMouseUp}
+          style={style}
+        />
+      </MapContext>
     )
   }
 }
 
 ZoomableGlobe.defaultProps = {
-  center: [ 0, 0 ],
+  center: [0, 0],
   zoom: 1,
   disablePanning: false,
-  sensitivity: 0.25,
+  sensitivity: 0.25
 }
 
 export default ZoomableGlobe

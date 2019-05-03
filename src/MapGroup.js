@@ -1,52 +1,28 @@
+import React, { useContext } from "react"
 
-import React, { Component } from "react"
+import { MapContext } from "./utils"
 
-class MapGroup extends Component {
-  render() {
-
-    const {
-      children,
-      projection,
-      style,
-      zoom,
-      width,
-      height,
-      groupName,
-      itemName,
-    } = this.props
-    return (
-      <g className={`rsm-${groupName}`} style={ style }>
-        {
-          !children ?
-            null :
-            children.length === undefined ?
-              React.cloneElement(children, {
-                projection,
-                zoom,
-                width,
-                height,
-              }) :
-              children.map((child, i) =>
-                !child ?
-                  null :
-                  React.cloneElement(child, {
-                    key: child.key || `${itemName}-${i}`,
-                    projection,
-                    zoom,
-                    width,
-                    height,
-                  })
-              )
-        }
+function MapGroup({ style, groupName, itemName, children }) {
+  const context = useContext(MapContext)
+  return (
+    <MapContext.Provider
+      value={{
+        ...context,
+        groupName,
+        itemName
+      }}
+    >
+      <g className={`rsm-${groupName}`} style={style}>
+        {children}
       </g>
-    )
-  }
+    </MapContext.Provider>
+  )
 }
 
 MapGroup.defaultProps = {
   componentIdentifier: "Group",
   groupName: "group",
-  itemName: "group-item",
+  itemName: "group-item"
 }
 
 export default MapGroup

@@ -1,15 +1,15 @@
-
 import React, { Component } from "react"
 import { feature } from "topojson-client"
 
 class Geographies extends Component {
+  static contextType = MapContext
   constructor(props) {
     super(props)
 
     this.state = {
-      geographyPaths:
-        this.shouldFetchGeographies(props.geography) ? [] :
-          this.parseGeographies(props.geography)
+      geographyPaths: this.shouldFetchGeographies(props.geography)
+        ? []
+        : this.parseGeographies(props.geography)
     }
   }
   componentWillReceiveProps(nextProps) {
@@ -24,12 +24,15 @@ class Geographies extends Component {
     }
   }
   shouldComponentUpdate(nextProps, nextState) {
-    const geoPathsChanged = nextState.geographyPaths.length !== this.state.geographyPaths.length
+    const geoPathsChanged =
+      nextState.geographyPaths.length !== this.state.geographyPaths.length
     return geoPathsChanged || nextProps.disableOptimization
   }
   componentDidMount() {
     if (this.props.geographyUrl || this.props.geographyPaths) {
-      console.warn("You are using the deprecated geographyUrl or geographyPaths props. Use the new geography prop instead. Check out the new docs here: https://github.com/zcreativelabs/react-simple-maps#Geographies-component")
+      console.warn(
+        "You are using the deprecated geographyUrl or geographyPaths props. Use the new geography prop instead. Check out the new docs here: https://github.com/zcreativelabs/react-simple-maps#Geographies-component"
+      )
     }
     if (this.shouldFetchGeographies(this.props.geography)) {
       this.fetchGeographies(this.props.geography)
@@ -39,27 +42,27 @@ class Geographies extends Component {
     this.cancelPendingRequest()
   }
   render() {
-    const {
-      projection,
-      style,
-      children,
-    } = this.props
+    const { projection } = this.context
+    const { style, children } = this.props
     return (
-      <g className="rsm-geographies" style={ style }>
-        { children(this.state.geographyPaths || [], projection) }
+      <g className="rsm-geographies" style={style}>
+        {children(this.state.geographyPaths || [], projection)}
       </g>
     )
   }
   shouldFetchGeographies(geography) {
-    return typeof(geography) === 'string'
+    return typeof geography === "string"
   }
   parseGeographies(geography) {
     if (Array.isArray(geography)) {
       return geography
     }
 
-    if (Object.prototype.toString.call(geography) === '[object Object]') {
-      return feature(geography, geography.objects[Object.keys(geography.objects)[0]]).features
+    if (Object.prototype.toString.call(geography) === "[object Object]") {
+      return feature(
+        geography,
+        geography.objects[Object.keys(geography.objects)[0]]
+      ).features
     }
 
     return []
@@ -70,13 +73,16 @@ class Geographies extends Component {
     request.onload = () => {
       if (request.status >= 200 && request.status < 400) {
         const geographyPaths = JSON.parse(request.responseText)
-        this.setState({
-          geographyPaths: this.parseGeographies(geographyPaths),
-        }, () => {
-          if (this.props.onGeographyPathsLoaded) {
-            this.props.onGeographyPathsLoaded(String(request.status))
+        this.setState(
+          {
+            geographyPaths: this.parseGeographies(geographyPaths)
+          },
+          () => {
+            if (this.props.onGeographyPathsLoaded) {
+              this.props.onGeographyPathsLoaded(String(request.status))
+            }
           }
-        })
+        )
       } else {
         if (this.props.onGeographyPathsLoaded) {
           this.props.onGeographyPathsLoaded(String(request.status))
@@ -102,7 +108,7 @@ class Geographies extends Component {
 Geographies.defaultProps = {
   componentIdentifier: "Geographies",
   disableOptimization: false,
-  geography: "",
+  geography: ""
 }
 
 export default Geographies

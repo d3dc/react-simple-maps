@@ -1,7 +1,7 @@
-
 import React, { Component } from "react"
 import { geoPath } from "d3-geo"
 
+import { MapContext } from "./ComposableMap"
 import { roundPath } from "./utils"
 
 const pathCache = {}
@@ -13,11 +13,11 @@ const renderPath = (cacheId, geography, projection, round, precision) => {
     ? pathCache[cacheId]
       ? pathCache[cacheId]
       : round
-        ? roundPath(geoPath().projection(projection)(geography), precision)
-        : geoPath().projection(projection)(geography)
-    : round
       ? roundPath(geoPath().projection(projection)(geography), precision)
       : geoPath().projection(projection)(geography)
+    : round
+    ? roundPath(geoPath().projection(projection)(geography), precision)
+    : geoPath().projection(projection)(geography)
 
   if (cacheId) pathCache[cacheId] = pathString
 
@@ -25,12 +25,13 @@ const renderPath = (cacheId, geography, projection, round, precision) => {
 }
 
 class Geography extends Component {
+  static contextType = MapContext
   constructor() {
     super()
 
     this.state = {
       hover: false,
-      pressed: false,
+      pressed: false
     }
 
     this.handleMouseEnter = this.handleMouseEnter.bind(this)
@@ -50,80 +51,95 @@ class Geography extends Component {
   handleMouseEnter(evt) {
     evt.persist()
     const { onMouseEnter, geography } = this.props
-    this.setState({
-      hover: true,
-    }, () => onMouseEnter && onMouseEnter(geography, evt))
+    this.setState(
+      {
+        hover: true
+      },
+      () => onMouseEnter && onMouseEnter(geography, evt)
+    )
   }
   handleMouseMove(evt) {
     evt.persist()
     if (this.state.pressed) return
     const { onMouseMove, geography } = this.props
     if (!this.state.hover) {
-      this.setState({
-        hover: true,
-      }, () => onMouseMove && onMouseMove(geography, evt))
-    }
-    else if (onMouseMove) onMouseMove(geography, evt)
+      this.setState(
+        {
+          hover: true
+        },
+        () => onMouseMove && onMouseMove(geography, evt)
+      )
+    } else if (onMouseMove) onMouseMove(geography, evt)
     else return
   }
   handleMouseLeave(evt) {
     evt.persist()
     const { onMouseLeave, geography } = this.props
-    this.setState({
-      hover: false,
-      pressed: false,
-    }, () => onMouseLeave && onMouseLeave(geography, evt))
+    this.setState(
+      {
+        hover: false,
+        pressed: false
+      },
+      () => onMouseLeave && onMouseLeave(geography, evt)
+    )
   }
   handleMouseDown(evt) {
     evt.persist()
     const { onMouseDown, geography } = this.props
-    this.setState({
-      pressed: true,
-    }, () => onMouseDown && onMouseDown(geography, evt))
+    this.setState(
+      {
+        pressed: true
+      },
+      () => onMouseDown && onMouseDown(geography, evt)
+    )
   }
   handleMouseUp(evt) {
     evt.persist()
     const { onMouseUp, geography } = this.props
-    this.setState({
-      pressed: false,
-    }, () => onMouseUp && onMouseUp(geography, evt))
+    this.setState(
+      {
+        pressed: false
+      },
+      () => onMouseUp && onMouseUp(geography, evt)
+    )
   }
   handleFocus(evt) {
     evt.persist()
     const { onFocus, geography } = this.props
-    this.setState({
-      hover: true,
-    }, () => onFocus && onFocus(geography, evt))
+    this.setState(
+      {
+        hover: true
+      },
+      () => onFocus && onFocus(geography, evt)
+    )
   }
   handleBlur(evt) {
     evt.persist()
     const { onBlur, geography } = this.props
-    this.setState({
-      hover: false,
-    }, () => onBlur && onBlur(geography, evt))
+    this.setState(
+      {
+        hover: false
+      },
+      () => onBlur && onBlur(geography, evt)
+    )
   }
   render() {
+    const { projection } = this.context
 
-    const {
+    const { geography, round, cacheId, precision, tabable, style } = this.props
+
+    const { hover, pressed } = this.state
+
+    const pathString = renderPath(
+      cacheId,
       geography,
       projection,
       round,
-      cacheId,
-      precision,
-      tabable,
-      style,
-    } = this.props
-
-    const {
-      hover,
-      pressed,
-    } = this.state
-
-    const pathString = renderPath(cacheId, geography, projection, round, precision)
+      precision
+    )
 
     const excludeProps = [
       "geography",
-      "projection",
       "round",
       "cacheId",
       "precision",
@@ -136,7 +152,7 @@ class Geography extends Component {
       "onMouseDown",
       "onMouseUp",
       "onFocus",
-      "onBlur",
+      "onBlur"
     ]
 
     const restProps = Object.keys(this.props)
@@ -148,19 +164,23 @@ class Geography extends Component {
 
     return (
       <path
-        d={ pathString }
-        className={ `rsm-geography${ pressed ? " rsm-geography--pressed" : "" }${ hover ? " rsm-geography--hover" : "" }` }
-        style={ style[pressed || hover ? (pressed ? "pressed" : "hover") : "default"] }
-        onClick={ this.handleMouseClick }
-        onMouseEnter={ this.handleMouseEnter }
-        onMouseMove={ this.handleMouseMove }
-        onMouseLeave={ this.handleMouseLeave }
-        onMouseDown={ this.handleMouseDown }
-        onMouseUp={ this.handleMouseUp }
-        onFocus={ this.handleFocus }
-        onBlur={ this.handleBlur }
-        tabIndex={ tabable ? 0 : -1 }
-        { ...restProps }
+        d={pathString}
+        className={`rsm-geography${pressed ? " rsm-geography--pressed" : ""}${
+          hover ? " rsm-geography--hover" : ""
+        }`}
+        style={
+          style[pressed || hover ? (pressed ? "pressed" : "hover") : "default"]
+        }
+        onClick={this.handleMouseClick}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseMove={this.handleMouseMove}
+        onMouseLeave={this.handleMouseLeave}
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        tabIndex={tabable ? 0 : -1}
+        {...restProps}
       />
     )
   }
@@ -174,7 +194,7 @@ Geography.defaultProps = {
   style: {
     default: {},
     hover: {},
-    pressed: {},
+    pressed: {}
   }
 }
 

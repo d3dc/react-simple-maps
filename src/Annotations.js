@@ -1,24 +1,20 @@
-
-import React, { Component } from "react"
+import React from "react"
 
 import MapGroup from "./MapGroup"
 
-const Annotations = ({
+function Annotations({
   groupName,
   itemName,
   componentIdentifier,
-  ...restProps,
-}) =>
-  <MapGroup
-    groupName={groupName}
-    itemName={itemName}
-    {...restProps}
-  />
+  ...restProps
+}) {
+  return <MapGroup groupName={groupName} itemName={itemName} {...restProps} />
+}
 
 Annotations.defaultProps = {
   componentIdentifier: "Annotations",
   groupName: "annotations",
-  itemName: "annotation",
+  itemName: "annotation"
 }
 
 export default Annotations
