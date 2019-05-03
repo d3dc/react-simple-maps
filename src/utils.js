@@ -1,4 +1,4 @@
-import { createContext } from "react"
+import { createContext, useContext } from "react"
 
 export const MapContext = createContext({
   width: 800,
@@ -8,6 +8,8 @@ export const MapContext = createContext({
   itemName: "item",
   projection: null
 })
+
+export const useMap = () => useContext(MapContext)
 
 export function calculateResizeFactor(actualDimension, baseDimension) {
   if (actualDimension === 0) return 1
