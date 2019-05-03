@@ -11,7 +11,6 @@ const computeOutline = projection =>
   geoPath().projection(projection)(geoGraticule().outline())
 
 class Graticule extends Component {
-  static contextType = MapContext
   constructor() {
     super()
     this.state = {
@@ -84,6 +83,8 @@ class Graticule extends Component {
     )
   }
 }
+
+Graticule.contextType = MapContext
 
 Graticule.defaultProps = {
   componentIdentifier: "Graticule",

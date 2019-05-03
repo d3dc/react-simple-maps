@@ -1,8 +1,9 @@
 import React, { Component } from "react"
 import { feature } from "topojson-client"
 
+import { MapContext } from "./utils"
+
 class Geographies extends Component {
-  static contextType = MapContext
   constructor(props) {
     super(props)
 
@@ -104,6 +105,8 @@ class Geographies extends Component {
     }
   }
 }
+
+Geographies.contextType = MapContext
 
 Geographies.defaultProps = {
   componentIdentifier: "Geographies",

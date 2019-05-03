@@ -4,7 +4,6 @@ import { geoLength } from "d3-geo"
 import { MapContext } from "./ComposableMap"
 
 class Marker extends Component {
-  static contextType = MapContext
   constructor() {
     super()
 
@@ -169,6 +168,8 @@ class Marker extends Component {
     )
   }
 }
+
+Marker.contextType = MapContext
 
 Marker.defaultProps = {
   style: {

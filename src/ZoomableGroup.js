@@ -9,14 +9,13 @@ import {
 } from "./utils"
 
 class ZoomableGroup extends Component {
-  static contextType = MapContext
   constructor(props) {
     super(props)
 
     const { center, backdrop } = this.props
     const { width, height, zoom, projection } = this.context
 
-    const backdrop = computeBackdrop(projection, backdrop)
+    const transformedBackdrop = computeBackdrop(projection, backdrop)
 
     this.state = {
       mouseX: calculateMousePosition("x", projection, zoom, 1),
@@ -27,10 +26,10 @@ class ZoomableGroup extends Component {
       resizeFactorX: 1,
       resizeFactorY: 1,
       backdrop: {
-        width: Math.round(backdrop.width),
-        height: Math.round(backdrop.height),
-        x: Math.round(backdrop.x),
-        y: Math.round(backdrop.y)
+        width: Math.round(transformedBackdrop.width),
+        height: Math.round(transformedBackdrop.height),
+        x: Math.round(transformedBackdrop.x),
+        y: Math.round(transformedBackdrop.y)
       }
     }
 
@@ -203,19 +202,22 @@ class ZoomableGroup extends Component {
   }
   render() {
     const { projection, width, height } = this.context
-    const { zoom, style, children } = this.props
+    const { zoom, center, style, children } = this.props
 
     const { mouseX, mouseY, resizeFactorX, resizeFactorY } = this.state
 
     return (
-      <MapContext value={{
-        ...this.context,
-        zoom
-      }}
-      <g
-        className="rsm-zoomable-group"
-        ref={this.zoomableGroupNode}
-        transform={`
+      <MapContext
+        value={{
+          ...this.context,
+          center,
+          zoom
+        }}
+      >
+        <g
+          className="rsm-zoomable-group"
+          ref={this.zoomableGroupNode}
+          transform={`
            translate(
              ${Math.round((width / 2 + resizeFactorX * mouseX) * 100) / 100}
              ${Math.round((height / 2 + resizeFactorY * mouseY) * 100) / 100}
@@ -223,27 +225,30 @@ class ZoomableGroup extends Component {
            scale(${zoom})
            translate(${-width / 2} ${-height / 2})
          `}
-        onMouseMove={this.handleMouseMove}
-        onMouseUp={this.handleMouseUp}
-        onMouseDown={this.handleMouseDown}
-        onTouchStart={this.handleTouchStart}
-        onTouchMove={this.handleTouchMove}
-        onTouchEnd={this.handleMouseUp}
-        style={style}
-      >
-        <rect
-          x={this.state.backdrop.x}
-          y={this.state.backdrop.y}
-          width={this.state.backdrop.width}
-          height={this.state.backdrop.height}
-          fill="transparent"
-          style={{ strokeWidth: 0 }}
-        />
-        {children}
-      </g>
+          onMouseMove={this.handleMouseMove}
+          onMouseUp={this.handleMouseUp}
+          onMouseDown={this.handleMouseDown}
+          onTouchStart={this.handleTouchStart}
+          onTouchMove={this.handleTouchMove}
+          onTouchEnd={this.handleMouseUp}
+          style={style}
+        >
+          <rect
+            x={this.state.backdrop.x}
+            y={this.state.backdrop.y}
+            width={this.state.backdrop.width}
+            height={this.state.backdrop.height}
+            fill="transparent"
+            style={{ strokeWidth: 0 }}
+          />
+          {children}
+        </g>
+      </MapContext>
     )
   }
 }
+
+ZoomableGroup.contextType = MapContext
 
 ZoomableGroup.defaultProps = {
   center: [0, 0],

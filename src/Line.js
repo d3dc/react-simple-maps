@@ -4,7 +4,6 @@ import { geoLength } from "d3-geo"
 import { MapContext } from "./ComposableMap"
 
 class Line extends Component {
-  static contextType = MapContext
   constructor(props) {
     super(props)
 
@@ -182,6 +181,8 @@ class Line extends Component {
     )
   }
 }
+
+Line.contextType = MapContext
 
 Line.defaultProps = {
   style: {

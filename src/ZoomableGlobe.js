@@ -4,7 +4,6 @@ import { geoPath } from "d3-geo"
 import { MapContext } from "./utils"
 
 class ZoomableGlobe extends Component {
-  static contextType = MapContext
   constructor(props) {
     super(props)
 
@@ -127,8 +126,8 @@ class ZoomableGlobe extends Component {
     )
   }
   render() {
-    const { style, children } = this.props
-    const { projection, width, height, zoom } = this.context
+    const { center, zoom, style, children } = this.props
+    const { projection, width, height } = this.context
 
     const { rotation, mouseX, mouseY } = this.state
 
@@ -136,7 +135,9 @@ class ZoomableGlobe extends Component {
       <MapContext
         value={{
           ...this.context,
-          projection: projection.rotate(rotation)
+          projection: projection.rotate(rotation),
+          center,
+          zoom
         }}
       >
         <g
@@ -159,6 +160,8 @@ class ZoomableGlobe extends Component {
     )
   }
 }
+
+ZoomableGlobe.contextType = MapContext
 
 ZoomableGlobe.defaultProps = {
   center: [0, 0],

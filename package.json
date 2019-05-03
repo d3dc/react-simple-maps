@@ -7,15 +7,15 @@
     "build": "babel src --out-dir lib",
     "watch": "babel --watch src --out-dir lib",
     "prepare": "npm run build",
-    "test": "mocha './tests/**/*.spec.js' --compilers js:babel-core/register"
+    "test": "mocha './tests/**/*.spec.js' --compilers js:@babel/register"
   },
   "babel": {
     "presets": [
-      "env",
-      "react"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ],
     "plugins": [
-      "transform-object-rest-spread"
+      "@babel/plugin-proposal-object-rest-spread"
     ]
   },
   "repository": {
@@ -37,7 +37,9 @@
   "homepage": "https://github.com/zcreativelabs/react-simple-maps#readme",
   "devDependencies": {
     "@babel/cli": "^7.4.4",
-    "@babel/plugin-transform-object-rest-spread": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/register": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "expect": "^23.5.0",

@@ -25,7 +25,6 @@ const renderPath = (cacheId, geography, projection, round, precision) => {
 }
 
 class Geography extends Component {
-  static contextType = MapContext
   constructor() {
     super()
 
@@ -185,6 +184,8 @@ class Geography extends Component {
     )
   }
 }
+
+Geography.contextType = MapContext
 
 Geography.defaultProps = {
   precision: 0.1,
