@@ -4,8 +4,8 @@ import { geoLength } from "d3-geo"
 import { MapContext } from "./ComposableMap"
 
 class Line extends Component {
-  constructor(props) {
-    super(props)
+  constructor(props, context) {
+    super(props, context)
 
     this.state = {
       hover: false,

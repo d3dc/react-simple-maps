@@ -9,8 +9,8 @@ import {
 } from "./utils"
 
 class ZoomableGroup extends Component {
-  constructor(props) {
-    super(props)
+  constructor(props, context) {
+    super(props, context)
 
     const { center, backdrop } = this.props
     const { width, height, zoom, projection } = this.context

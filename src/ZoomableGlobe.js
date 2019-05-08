@@ -4,8 +4,8 @@ import { geoPath } from "d3-geo"
 import { MapContext } from "./utils"
 
 class ZoomableGlobe extends Component {
-  constructor(props) {
-    super(props)
+  constructor(props, context) {
+    super(props, context)
 
     const initialRotation = props.projection.rotate()
 

@@ -4,8 +4,8 @@ import { feature } from "topojson-client"
 import { MapContext } from "./utils"
 
 class Geographies extends Component {
-  constructor(props) {
-    super(props)
+  constructor(props, context) {
+    super(props, context)
 
     this.state = {
       geographyPaths: this.shouldFetchGeographies(props.geography)
