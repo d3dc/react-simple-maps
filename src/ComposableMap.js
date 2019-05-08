@@ -5,10 +5,6 @@ import projections from "./projections"
 import defaultProjectionConfig from "./projectionConfig"
 
 class ComposableMap extends Component {
-  constructor() {
-    super()
-    this.projection = this.projection.bind(this)
-  }
   buildProjection() {
     const { projection, projectionConfig, width, height } = this.props
 
