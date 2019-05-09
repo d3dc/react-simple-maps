@@ -132,7 +132,7 @@ class ZoomableGlobe extends Component {
     const { rotation, mouseX, mouseY } = this.state
 
     return (
-      <MapContext
+      <MapContext.Provider
         value={{
           ...this.context,
           projection: projection.rotate(rotation),
@@ -156,7 +156,7 @@ class ZoomableGlobe extends Component {
           onTouchEnd={this.handleMouseUp}
           style={style}
         />
-      </MapContext>
+      </MapContext.Provider>
     )
   }
 }

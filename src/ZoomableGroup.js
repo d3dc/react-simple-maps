@@ -229,7 +229,7 @@ class ZoomableGroup extends Component {
     const { mouseX, mouseY, resizeFactorX, resizeFactorY } = this.state
 
     return (
-      <MapContext
+      <MapContext.Provider
         value={{
           ...this.context,
           center,
@@ -265,7 +265,7 @@ class ZoomableGroup extends Component {
           />
           {children}
         </g>
-      </MapContext>
+      </MapContext.Provider>
     )
   }
 }
