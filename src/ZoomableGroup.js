@@ -12,8 +12,8 @@ class ZoomableGroup extends Component {
   constructor(props, context) {
     super(props, context)
 
-    const { center, backdrop } = this.props
-    const { width, height, zoom, projection } = this.context
+    const { zoom, center, backdrop } = this.props
+    const { width, height, projection } = this.context
 
     const transformedBackdrop = computeBackdrop(projection, backdrop)
     const mouseX = calculateMousePosition(
@@ -172,8 +172,8 @@ class ZoomableGroup extends Component {
     })
   }
   componentDidMount() {
-    const { center } = this.props
-    const { width, height, projection, zoom } = this.context
+    const { zoom, center } = this.props
+    const { width, height, projection } = this.context
 
     const resizeFactorX = calculateResizeFactor(
       this.zoomableGroupNode.current.parentNode.getBoundingClientRect().width,
