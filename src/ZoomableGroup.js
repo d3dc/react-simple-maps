@@ -16,10 +16,28 @@ class ZoomableGroup extends Component {
     const { width, height, zoom, projection } = this.context
 
     const transformedBackdrop = computeBackdrop(projection, backdrop)
+    const mouseX = calculateMousePosition(
+      "x",
+      projection,
+      zoom,
+      1,
+      center,
+      width,
+      height
+    )
+    const mouseY = calculateMousePosition(
+      "y",
+      projection,
+      zoom,
+      1,
+      center,
+      width,
+      height
+    )
 
     this.state = {
-      mouseX: calculateMousePosition("x", projection, zoom, 1),
-      mouseY: calculateMousePosition("y", projection, zoom, 1),
+      mouseX,
+      mouseY,
       mouseXStart: 0,
       mouseYStart: 0,
       isPressed: false,
@@ -98,7 +116,7 @@ class ZoomableGroup extends Component {
   }
   componentWillReceiveProps(nextProps, nextContext) {
     const { mouseX, mouseY, resizeFactorX, resizeFactorY } = this.state
-    const { projection } = this.context
+    const { projection, width, height } = this.context
     const { center, zoom } = this.props
 
     const zoomFactor = nextProps.zoom / zoom
@@ -111,18 +129,22 @@ class ZoomableGroup extends Component {
         ? calculateMousePosition(
             "x",
             nextContext.projection,
-            nextProps,
             nextProps.zoom,
-            resizeFactorX
+            resizeFactorX,
+            center,
+            width,
+            height
           )
         : mouseX * zoomFactor,
       mouseY: centerChanged
         ? calculateMousePosition(
             "y",
             nextContext.projection,
-            nextProps,
             nextProps.zoom,
-            resizeFactorY
+            resizeFactorY,
+            center,
+            width,
+            height
           )
         : mouseY * zoomFactor
     })
