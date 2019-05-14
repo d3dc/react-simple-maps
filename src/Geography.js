@@ -1,8 +1,7 @@
 import React, { Component } from "react"
 import { geoPath } from "d3-geo"
 
-import { MapContext } from "./ComposableMap"
-import { roundPath } from "./utils"
+import { MapContext, roundPath } from "./utils"
 
 const pathCache = {}
 
