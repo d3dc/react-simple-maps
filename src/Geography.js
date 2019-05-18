@@ -122,7 +122,7 @@ class Geography extends Component {
     )
   }
   render() {
-    const { projection } = this.context
+    const projection = this.props.projection || this.context.projection
 
     const { geography, round, cacheId, precision, tabable, style } = this.props
 
