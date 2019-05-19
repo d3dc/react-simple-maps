@@ -78,8 +78,9 @@ class ZoomableGroup extends Component {
       isPressed: false
     })
     if (!this.props.onMoveEnd) return
+    const { zoom } = this.props
     const { mouseX, mouseY, resizeFactorX, resizeFactorY } = this.state
-    const { zoom, width, height, projection } = this.context
+    const { width, height, projection } = this.context
     const { onMoveEnd } = this.props
     const x = width / 2 - (mouseX * resizeFactorX) / zoom
     const y = height / 2 - (mouseY * resizeFactorY) / zoom
@@ -88,8 +89,9 @@ class ZoomableGroup extends Component {
   }
   handleMouseDown({ pageX, pageY }) {
     if (this.props.disablePanning) return
+    const { zoom } = this.props
     const { mouseX, mouseY, resizeFactorX, resizeFactorY } = this.state
-    const { zoom, width, height, projection } = this.context
+    const { width, height, projection } = this.context
     const { onMoveStart } = this.props
     this.setState({
       isPressed: true,
@@ -150,7 +152,8 @@ class ZoomableGroup extends Component {
     })
   }
   handleResize() {
-    const { width, height, projection, zoom } = this.context
+    const { zoom } = this.props
+    const { width, height, projection } = this.context
 
     const resizeFactorX = calculateResizeFactor(
       this.zoomableGroupNode.current.parentNode.getBoundingClientRect().width,
